@@ -1,9 +1,10 @@
 import { useState } from "react"
-import {Button,} from "semantic-ui-react"
+import {Button, Loader,} from "semantic-ui-react"
 import { ColumnDisplay } from "./column-display"
 
 import {fetchMovies, fetchTvShows} from "./query"
 import { useQuery } from "@tanstack/react-query"
+import { Navigate } from "react-router-dom"
 
 export enum DisplayType {
     Movies = "movies",
@@ -15,6 +16,11 @@ export const Home = () => {
 
     const {data: movieData, isLoading: isLoadingMovies} = useQuery({queryKey: ["movies"], queryFn: fetchMovies})
     const {data: tvShowData, isLoading: isLoadingTvShows} = useQuery({queryKey: ["tvshows"], queryFn: fetchTvShows})
+
+    if(localStorage.getItem("guest_session_id") === null) {
+        return <Navigate to="/auth" />
+    }
+
     return (
         <div style={{marginTop:50, height: "auto"}}>
             <Button.Group>
@@ -26,12 +32,12 @@ export const Home = () => {
                 </Button>
             </Button.Group>
 
-            {isLoadingMovies || isLoadingTvShows ? (<div>Loading...</div>) : (
+            {isLoadingMovies || isLoadingTvShows ? (<Loader>Loading...</Loader>) : (
             <div style={{marginTop: 20}}>
                 {displayType === DisplayType.Movies ? (
-                    <ColumnDisplay data={movieData.results}  displayType={DisplayType.Movies}/>
+                    <ColumnDisplay data={movieData.results}  displayType={DisplayType.Movies}  />
                 ) : (
-                    <ColumnDisplay data={tvShowData.results} displayType={DisplayType.TvShows}/> )}
+                    <ColumnDisplay data={tvShowData.results} displayType={DisplayType.TvShows} /> )}
             </div>
             )}
         </div>

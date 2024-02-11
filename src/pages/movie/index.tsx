@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom"
 import { Grid, Header, Loader, Segment, Image, List, Label } from "semantic-ui-react"
 import { fetchMovieDetails, fetchMovieProvider } from "./query"
+import { useQuery } from "@tanstack/react-query"
+
 
 export const Movie = () => {
     const { id } = useParams<string>()
@@ -10,8 +11,17 @@ export const Movie = () => {
         return <div>Invalid Movie ID</div>
     }
 
-    const {data: dataMovie, isLoading: isLoadingMovie} = useQuery({queryKey: ["movie"], queryFn: () => fetchMovieDetails(id)})
-    const {data: dataProvider, isLoading: isLoadingProvider} = useQuery({queryKey: ["movieProvider"], queryFn: () => fetchMovieProvider(id)})
+    // Fetch movie details
+    const { data: dataMovie, isLoading: isLoadingMovie } = useQuery({
+        queryKey: ["movie"],
+        queryFn: () => fetchMovieDetails(id)
+    })
+
+    // Fetch movie provider
+    const { data: dataProvider, isLoading: isLoadingProvider } = useQuery({
+        queryKey: ["movieProvider"],
+        queryFn: () => fetchMovieProvider(id)
+    })
 
     if(isLoadingMovie || isLoadingProvider ) {
         return <Loader active />
@@ -45,7 +55,7 @@ export const Movie = () => {
                         </List.Item>
                         <List.Item>
                         <List.Header>Providers: </List.Header>
-                        {dataProvider?.results && (
+                        {dataProvider?.results ? (
                         <div>
                             {Object.keys(dataProvider.results).map((country: any) => (
                             <div key={country}>
@@ -66,7 +76,7 @@ export const Movie = () => {
                             </div>
                             ))}
                         </div>
-                        )}
+                        ): (<p>No provider in portugal.</p>)}
 
 
                         </List.Item>
